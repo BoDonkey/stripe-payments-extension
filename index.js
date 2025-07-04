@@ -63,7 +63,7 @@ export default {
         const styleAttr = style ? ` style="${self.apos.util.escapeHtml(style)}"` : '';
         const disabledAttr = disabled ? ' disabled' : '';
 
-        return `<button${classAttr}${styleAttr}${disabledAttr} ${dataAttrs}>${self.apos.util.escapeHtml(buttonText)}</button>`;
+        return `<button${classAttr}${styleAttr}${disabledAttr} ${dataAttrs}><span>${self.apos.util.escapeHtml(buttonText)}</span></button>`;
       }
     };
   },
