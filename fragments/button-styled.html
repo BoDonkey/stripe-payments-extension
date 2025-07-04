@@ -1,0 +1,19 @@
+{# Styled button fragment with common framework classes #}
+{%- set productId = data.productId or data.product._id -%}
+{%- set price = data.price or data.product.pricePromo or data.product.price -%}
+{%- set name = data.name or data.product.title -%}
+{%- set image = data.image or (apos.attachment.url(apos.image.first(data.product.image), { size: 'one-half' }) if data.product.image else '') -%}
+{%- set buttonText = data.buttonText or 'Buy Now' -%}
+
+{# Default Stripe-branded styling if no custom class provided #}
+{%- set defaultClass = 'stripe-checkout-button stripe-button-default' -%}
+{%- set cssClass = data.class or defaultClass -%}
+
+<button class="{{ cssClass }}"
+        data-product-id="{{ productId }}"
+        data-price="{{ price }}"
+        data-name="{{ name }}"
+        data-image="{{ image }}"
+        {{ 'disabled' if data.disabled }}>
+  <span>{{ buttonText }}</span>
+</button>

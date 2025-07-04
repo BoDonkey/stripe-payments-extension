@@ -1,0 +1,16 @@
+{# Basic unstyled button fragment #}
+{%- set productId = data.productId or data.product._id -%}
+{%- set price = data.price or data.product.pricePromo or data.product.price -%}
+{%- set name = data.name or data.product.title -%}
+{%- set image = data.image or (apos.attachment.url(apos.image.first(data.product.image), { size: 'one-half' }) if data.product.image else '') -%}
+{%- set buttonText = data.buttonText or 'Buy Now' -%}
+{%- set cssClass = data.class or '' -%}
+
+<button class="stripe-checkout-button {{ cssClass }}"
+        data-product-id="{{ productId }}"
+        data-price="{{ price }}"
+        data-name="{{ name }}"
+        data-image="{{ image }}"
+        {{ 'disabled' if data.disabled }}>
+  {{ buttonText }}
+</button>
