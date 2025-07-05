@@ -1,0 +1,20 @@
+{%- set imageUrl = '' -%}
+{%- if data.widget.productImage -%}
+  {%- set imageUrl = apos.attachment.url(data.widget.productImage, { size: 'one-half' }) -%}
+{%- endif -%}
+
+{%- set buttonClass = 'stripe-checkout-button' -%}
+{%- if data.widget.buttonStyle == 'custom' and data.widget.customClass -%}
+  {%- set buttonClass = buttonClass + ' ' + data.widget.customClass -%}
+{%- else -%}
+  {%- set buttonClass = buttonClass + ' stripe-button-' + data.widget.buttonStyle -%}
+{%- endif -%}
+
+<button class="{{ buttonClass }}"
+        data-product-id="widget-{{ data.widget._id }}"
+        data-price="{{ data.widget.price }}"
+        data-name="{{ data.widget.productName }}"
+        data-image="{{ imageUrl }}"
+        {{ 'disabled' if data.widget.disabled }}>
+  <span>{{ data.widget.buttonText }}</span>
+</button>
