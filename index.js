@@ -2,8 +2,8 @@ export default {
   bundle: {
     directory: 'modules',
     modules: [
-      'stripe-payment',
-      'stripe-button-widget'
+      '@bodonkey/stripe-payment',
+      '@bodonkey/stripe-button-widget'
     ]
   }
 };
