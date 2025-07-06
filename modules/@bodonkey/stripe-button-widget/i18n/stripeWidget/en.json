@@ -1,8 +1,7 @@
 {
   "label": "Stripe Payment Button",
   "installErrorOne": "stripe-button-widget requires the stripe-payment module. Make sure both modules are installed and configured.",
-  "installErrorTwo":
-  "Stripe payment module is not configured. Set APOS_STRIPE_SECRET_KEY environment variable.",
+  "installErrorTwo": "Stripe payment module is not configured. Set APOS_STRIPE_SECRET_KEY environment variable.",
   "buttonText": {
     "label": "Button Text",
     "help": "Text displayed on the payment button"
@@ -39,26 +38,26 @@
   "disabled": {
     "label": "Disabled",
     "help": "Disable the button temporarily"
-  }
-},
-"groups": {
-  "content": "Content",
-  "advanced": "Advanced",
-  "styling": "Styling"
-},
-"choices": {
-  "buttonStyle": {
-    "primary": "Primary",
-    "secondary": "Secondary",
-    "success": "Success",
-    "custom": "Custom"
   },
-  "currency": {
-    "siteDefault": "Site Default"
-  },
-  "group": {
+  "groups": {
     "content": "Content",
     "advanced": "Advanced",
     "styling": "Styling"
+  },
+  "choices": {
+    "buttonStyle": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "success": "Success",
+      "custom": "Custom"
+    },
+    "currency": {
+      "siteDefault": "Site Default"
+    },
+    "group": {
+      "content": "Content",
+      "advanced": "Advanced",
+      "styling": "Styling"
+    }
   }
 }
