@@ -22,13 +22,13 @@ export default {
   },
   init(self) {
     // Check if the payment module is available
-    if (!self.apos.modules['stripe-payment']) {
+    if (!self.apos.modules['@bodonkey/stripe-payment']) {
       throw new Error( 'error one'
       );
     }
 
     // Check if Stripe is properly configured
-    const paymentModule = self.apos.modules['stripe-payment'];
+    const paymentModule = self.apos.modules['@bodonkey/stripe-payment'];
     if (!paymentModule.stripe) {
       self.apos.util.warn(
         'Error Two'
