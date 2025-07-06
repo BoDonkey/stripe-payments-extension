@@ -73,6 +73,17 @@ Use the provided template helpers in your product templates:
   style: 'background: blue; color: white; padding: 10px;'
 }) }}
 
+<!-- Use different currency than default
+-->
+<button class="stripe-checkout-button btn btn-primary"
+        data-product-id="{{ product._id }}"
+        data-price="{{ product.price }}"
+        data-name="{{ product.title }}"
+        data-currency="jpy"
+        data-image="{{ apos.attachment.url(product.image) }}">
+  Buy for ¥{{ product.price }}
+</button>
+
 <!-- Using with existing button helpers (e.g., Tailwind/Bootstrap) -->
 <button class="btn btn-primary stripe-checkout-button"
         data-product-id="{{ product._id }}"
@@ -193,6 +204,11 @@ export default {
 '@apostrophecms/stripe-payments': {
   options: {
     currency: 'eur', // Change currency
+    acceptedCurrencies: [ 'usd', 'eur', 'gbp', 'jpy', 'mxn' ], // Limit accepted currencies
+    currencyConfig: {
+      mxn: { decimals: 2, min: 0.01, symbol: '$', label: 'Mexican Peso' }
+    }, 
+    // Add custom currencies
     collectShipping: true, // Collect shipping address
     collectPhone: true, // Collect phone number
     allowPromotionCodes: true, // Enable promo codes

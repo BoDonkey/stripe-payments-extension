@@ -4,6 +4,7 @@ export default () => {
     const price = button.dataset.price;
     const name = button.dataset.name;
     const image = button.dataset.image;
+    const currency = button.dataset.currency;
 
     // Show loading state
     button.disabled = true;
@@ -25,7 +26,8 @@ export default () => {
           productId,
           price: parseFloat(price),
           name,
-          image
+          image,
+          currency
         })
       });
 

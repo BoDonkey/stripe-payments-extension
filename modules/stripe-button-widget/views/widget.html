@@ -10,11 +10,16 @@
   {%- set buttonClass = buttonClass + ' stripe-button-' + data.widget.buttonStyle -%}
 {%- endif -%}
 
-<button class="{{ buttonClass }}"
+{%- set currency = data.widget.currency or apos.modules['stripe-payment'].options.currency or 'usd' -%}
+{%- set formattedPrice = apos.modules['stripe-button-widget'].formatPrice(data.widget) -%}
+{%- set currencySymbol = apos.modules['stripe-button-widget'].getCurrencySymbol(data.widget) -%}
+
+<button class="stripe-checkout-button stripe-button-{{ data.widget.buttonStyle or 'primary' }}"
         data-product-id="widget-{{ data.widget._id }}"
         data-price="{{ data.widget.price }}"
         data-name="{{ data.widget.productName }}"
-        data-image="{{ imageUrl }}"
+        data-currency="{{ currency }}"
+        data-image="{{ apos.attachment.url(data.widget.productImage, { size: 'one-half' }) if data.widget.productImage }}"
         {{ 'disabled' if data.widget.disabled }}>
-  <span>{{ data.widget.buttonText }}</span>
+  <span>{{ data.widget.buttonText }} - {{ currencySymbol }}{{ formattedPrice }}</span>
 </button>

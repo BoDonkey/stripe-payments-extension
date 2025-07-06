@@ -1,0 +1,45 @@
+{
+  "buttons": {
+    "buyNow": "Buy Now",
+    "loading": "Loading...",
+    "buyFor": "Buy for {{currency}}{{price}}",
+    "purchaseNow": "Purchase Now",
+    "addToCart": "Add to Cart"
+  },
+  "checkout": {
+    "redirecting": "Redirecting to secure checkout...",
+    "processingPayment": "Processing your payment...",
+    "errorOccurred": "Sorry, there was an error processing your request. Please try again.",
+    "sessionExpired": "Your checkout session has expired. Please try again."
+  },
+  "success": {
+    "title": "Payment Successful!",
+    "subtitle": "Thank you for your purchase. Your order has been confirmed.",
+    "orderDetails": "Order Details",
+    "orderId": "Order ID",
+    "email": "Email",
+    "customer": "Customer",
+    "amount": "Amount",
+    "paymentStatus": "Payment Status",
+    "date": "Date",
+    "confirmationSent": "A confirmation email has been sent to {{email}}.",
+    "confirmationSentGeneric": "A confirmation email has been sent to your email address.",
+    "continueShoppingButton": "Continue Shopping",
+    "returnHomeButton": "Return Home"
+  },
+  "cancel": {
+    "title": "Payment Cancelled",
+    "subtitle": "Your payment was cancelled and no charges were made.",
+    "message": "Don't worry - your items are still available. You can continue shopping or try checking out again.",
+    "tryAgainButton": "Try Again",
+    "continueShoppingButton": "Continue Shopping"
+  },
+  "errors": {
+    "stripeNotConfigured": "Stripe payment system is not properly configured.",
+    "missingFields": "Missing required payment information.",
+    "unsupportedCurrency": "Currency {{currency}} is not supported.",
+    "invalidPrice": "Price must be at least {{min}} {{currency}}.",
+    "tooManyDecimals": "{{currency}} supports maximum {{decimals}} decimal places.",
+    "configurationWarning": "⚠️ Stripe Not Configured<br>Set the <code>APOS_STRIPE_SECRET_KEY</code> environment variable to enable payment buttons.<br><small>This message is only visible to logged-in administrators.</small>"
+  }
+}

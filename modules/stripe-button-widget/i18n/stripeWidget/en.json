@@ -1,0 +1,64 @@
+{
+  "label": "Stripe Payment Button",
+  "installErrorOne": "stripe-button-widget requires the stripe-payment module. Make sure both modules are installed and configured.",
+  "installErrorTwo":
+  "Stripe payment module is not configured. Set APOS_STRIPE_SECRET_KEY environment variable.",
+  "buttonText": {
+    "label": "Button Text",
+    "help": "Text displayed on the payment button"
+  },
+  "productName": {
+    "label": "Product Name",
+    "help": "Name displayed in Stripe checkout"
+  },
+  "price": {
+    "label": "Price",
+    "help": "Price in the selected currency"
+  },
+  "productImage": {
+    "label": "Product Image",
+    "help": "Optional image for Stripe checkout"
+  },
+  "currency": {
+    "label": "Currency",
+    "help": "Leave blank to use site default"
+  },
+  "buttonStyle": {
+    "label": "Button Style",
+    "choices": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "success": "Success",
+      "Custom": "Custom"
+    }
+  },
+  "customClass": {
+    "label": "Custom CSS Classes",
+    "help": "Additional CSS classes for custom styling"
+  },
+  "disabled": {
+    "label": "Disabled",
+    "help": "Disable the button temporarily"
+  }
+},
+"groups": {
+  "content": "Content",
+  "advanced": "Advanced",
+  "styling": "Styling"
+},
+"choices": {
+  "buttonStyle": {
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "success": "Success",
+    "custom": "Custom"
+  },
+  "currency": {
+    "siteDefault": "Site Default"
+  },
+  "group": {
+    "content": "Content",
+    "advanced": "Advanced",
+    "styling": "Styling"
+  }
+}

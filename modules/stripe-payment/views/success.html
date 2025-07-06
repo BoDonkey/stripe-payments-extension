@@ -32,7 +32,13 @@
           {% endif %}
           <div class="stripe-detail-row">
             <span>Amount:</span>
-            <span>${{ (data.session.amount_total / 100).toFixed(2) }} {{ data.session.currency.toUpperCase() }}</span>
+            <span class="font-semibold">
+              {% if data.session.currency == 'jpy' or data.session.currency == 'krw' %}
+                {{ data.session.currency.upper() }} {{ data.session.amount_total }}
+              {% else %}
+                {{ data.session.currency.upper() }} {{ (data.session.amount_total / 100).toFixed(2) }}
+              {% endif %}
+            </span>
           </div>
           <div class="stripe-detail-row">
             <span>Status:</span>

@@ -1,9 +1,22 @@
 import Stripe from 'stripe';
 
+const CURRENCY_CONFIG = {
+  usd: { decimals: 2, min: 0.01, symbol: '$', label: 'US Dollar' },
+  eur: { decimals: 2, min: 0.01, symbol: '€', label: 'Euro' },
+  gbp: { decimals: 2, min: 0.01, symbol: '£', label: 'British Pound' },
+  jpy: { decimals: 0, min: 1, symbol: '¥', label: 'Japanese Yen' },
+  cad: { decimals: 2, min: 0.01, symbol: 'C$', label: 'Canadian Dollar' },
+  aud: { decimals: 2, min: 0.01, symbol: 'A$', label: 'Australian Dollar' },
+  krw: { decimals: 0, min: 1, symbol: '₩', label: 'South Korean Won' },
+  kwd: { decimals: 3, min: 0.001, symbol: 'KD', label: 'Kuwaiti Dinar' }
+};
+
 export default {
   options: {
     alias: 'stripePayments',
     currency: 'usd',
+    currencyConfig: CURRENCY_CONFIG,
+    acceptedCurrencies: ['usd'],
     successUrl: '/checkout/success',
     cancelUrl: '/checkout/cancel',
     collectShipping: false,
@@ -13,12 +26,16 @@ export default {
     metadata: {},
     shippingCountries: ['US', 'CA', 'GB', 'AU'],
     buttonDefaults: {
-      text: 'Buy Now',
+      textKey: 'stripePayment:buttons.buyNow',
       class: 'stripe-checkout-button',
-      loadingText: 'Loading...'
+      loadingTextKey: 'stripePayment:buttons.loading'
+    },
+  },
+  i18n: {
+    stripePayment: {
+      browser: true
     }
   },
-
   init(self) {
     const secretKey = process.env.APOS_STRIPE_SECRET_KEY || self.options.apiSecret;
 
@@ -32,6 +49,31 @@ export default {
       self.apos.util.log('Stripe payments module initialized successfully');
     } else {
       self.apos.util.warn('Warning: Stripe secret key not found. Set APOS_STRIPE_SECRET_KEY environment variable or pass apiSecret in module options. Stripe functionality will not work.');
+    }
+  },
+  methods(self) {
+    return {
+      calculateStripeAmount(price, currency) {
+        const config = self.options.currencyConfig[currency.toLowerCase()];
+        if (!config) {
+          throw new Error(`Unsupported currency: ${currency}`);
+        }
+
+        if (config.decimals === 0) {
+          return Math.round(price);
+        } else {
+          return Math.round(price * Math.pow(10, config.decimals));
+        }
+      },
+
+      formatCurrency(amount, currency) {
+        const config = self.options.currencyConfig[currency.toLowerCase()];
+        if (!config) return amount.toString();
+
+        return config.decimals === 0
+          ? Math.round(amount).toString()
+          : amount.toFixed(config.decimals);
+      }
     }
   },
   helpers(self) {
@@ -70,23 +112,36 @@ export default {
   apiRoutes(self) {
     return {
       post: {
-        // Create a Stripe checkout session
         async createCheckout(req) {
           try {
             if (!self.stripe) {
-              throw new Error('Stripe not configured');
+              throw new Error(req.t('stripePayment:errors.stripeNotConfigured'));
             }
-            const { productId, price, name, image } = req.body;
+
+            const { productId, price, name, image, currency } = req.body;
             if (!productId || !price || !name) {
               return {
                 status: 'error',
-                message: 'Missing required fields',
+                message: req.t('stripePayment:errors.missingFields'),
                 required: ['productId', 'price', 'name'],
                 received: req.body
               };
             }
 
-            // Get base URL
+            const sessionCurrency = currency || self.options.currency || 'usd';
+
+            const acceptedCurrencies = self.options.acceptedCurrencies || Object.keys(self.options.currencyConfig);
+            if (!acceptedCurrencies.includes(sessionCurrency.toLowerCase())) {
+              return {
+                status: 'error',
+                message: `Unsupported currency: ${sessionCurrency}`,
+                acceptedCurrencies
+              };
+            }
+
+            const stripeAmount = self.calculateStripeAmount(price, sessionCurrency);
+
+                        // Get base URL
             let baseUrl = self.apos.page.getBaseUrl(req);
             if (!baseUrl) {
               const protocol = req.protocol;
@@ -108,50 +163,32 @@ export default {
               }
             }
 
-            // Build checkout session config
-            const sessionConfig = {
+            const session = await self.stripe.checkout.sessions.create({
               payment_method_types: ['card'],
               line_items: [
                 {
                   price_data: {
-                    currency: self.options.currency,
+                    currency: sessionCurrency.toLowerCase(),
                     product_data: {
                       name: name,
                       images: processedImages
                     },
-                    unit_amount: Math.round(parseFloat(price) * 100)
+                    unit_amount: stripeAmount
                   },
                   quantity: 1
                 }
               ],
               mode: 'payment',
-              success_url: `${baseUrl}${self.options.successUrl}?session_id={CHECKOUT_SESSION_ID}`,
-              cancel_url: `${baseUrl}${self.options.cancelUrl}`,
+              success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+              cancel_url: `${baseUrl}/checkout/cancel`,
               metadata: {
                 product_url: req.get('referer') || baseUrl,
                 product_id: productId,
+                original_currency: sessionCurrency,
+                original_price: price,
                 ...(self.options.metadata || {})
               }
-            };
-
-            // Add optional features
-            if (self.options.collectShipping) {
-              sessionConfig.shipping_address_collection = {
-                allowed_countries: ['US', 'CA', 'GB', 'AU'] // Add more as needed
-              };
-            }
-
-            if (self.options.collectPhone) {
-              sessionConfig.phone_number_collection = {
-                enabled: true
-              };
-            }
-
-            if (self.options.allowPromotionCodes) {
-              sessionConfig.allow_promotion_codes = true;
-            }
-
-            const session = await self.stripe.checkout.sessions.create(sessionConfig);
+            });
 
             return {
               url: session.url,
@@ -168,52 +205,5 @@ export default {
         }
       }
     };
-  },
-  get: {
-    '/checkout/success': async (req, res) => {
-      try {
-        let sessionData = null;
-        let error = null;
-
-        if (req.query.session_id) {
-          try {
-            const session = await self.stripe.checkout.sessions.retrieve(req.query.session_id);
-            sessionData = {
-              id: session.id,
-              amount_total: session.amount_total,
-              currency: session.currency,
-              customer_email: session.customer_details?.email,
-              customer_name: session.customer_details?.name,
-              payment_status: session.payment_status,
-              created_date: new Date(session.created * 1000).toLocaleDateString(),
-              referrer_url: session.metadata?.referrer_url || '/',
-              product_url: session.metadata?.product_url || '/'
-            };
-            self.apos.util.log(`Payment successful: ${session.id} - ${session.amount_total / 100} ${session.currency.toUpperCase()}`);
-          } catch (stripeError) {
-            self.apos.util.error('Error retrieving Stripe session:', stripeError);
-            error = 'Unable to retrieve payment information';
-          }
-        }
-
-        await self.sendPage(req, 'success', {
-          session: sessionData,
-          error: error,
-          hasSession: !!sessionData
-        });
-      } catch (error) {
-        self.apos.util.error('Error rendering success page:', error);
-        return res.status(500).send('error');
-      }
-    },
-
-    '/checkout/cancel': async (req, res) => {
-      try {
-        await self.sendPage(req, 'cancel', {});
-      } catch (error) {
-        self.apos.util.error('Error rendering cancel page:', error);
-        return res.status(500).send('error');
-      }
-    }
   }
 };
