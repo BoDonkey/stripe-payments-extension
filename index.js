@@ -1,8 +1,9 @@
 export default {
   bundle: {
-    modules: {
-      'stripe-payment': {},
-      'stripe-button-widget': {}
-    }
+    directory: 'modules',
+    modules: [
+      'stripe-payment',
+      'stripe-button-widget'
+    ]
   }
 };
