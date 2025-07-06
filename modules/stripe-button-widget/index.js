@@ -23,7 +23,7 @@ export default {
   init(self) {
     // Check if the payment module is available
     if (!self.apos.modules['stripe-payment']) {
-      throw new Error( __t('stripeWidget:installErrorOne')
+      throw new Error( 'error one'
       );
     }
 
@@ -31,7 +31,7 @@ export default {
     const paymentModule = self.apos.modules['stripe-payment'];
     if (!paymentModule.stripe) {
       self.apos.util.warn(
-        __t('stripeWidget:installErrorTwo')
+        'Error Two'
       );
     }
   },

@@ -12,7 +12,7 @@ const CURRENCY_CONFIG = {
 };
 
 export default {
-  extends: '@apostrophecms/module',
+  extend: '@apostrophecms/module',
   options: {
     alias: 'stripePayments',
     currency: 'usd',
