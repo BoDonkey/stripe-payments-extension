@@ -1,5 +1,5 @@
 {
-  "name": "@bodonkey/stripe-payments-extensions",
+  "name": "@bodonkey/stripe-payments-extension",
   "version": "1.0.0",
   "description": "Stripe payment integration for ApostropheCMS",
   "main": "index.js",
