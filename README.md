@@ -1,4 +1,4 @@
-# @bodonkey/stripe-payment
+# @bodonkey/stripe-payments-extension
 
 A flexible Stripe payment integration module for ApostropheCMS that provides secure checkout functionality with customizable styling.
 
@@ -14,7 +14,7 @@ A flexible Stripe payment integration module for ApostropheCMS that provides sec
 ## Installation
 
 ```bash
-npm install @bodonkey/stripe-payment
+npm install @bodonkey/stripe-payments-extension
 ```
 
 ## Quick Setup
