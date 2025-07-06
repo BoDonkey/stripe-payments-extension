@@ -1,5 +1,5 @@
 {
-  "name": "@bodonkey/stripe-payments",
+  "name": "@bodonkey/stripe-payment",
   "version": "1.0.0",
   "description": "Stripe payment integration for ApostropheCMS",
   "main": "index.js",
@@ -25,10 +25,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bodonkey/stripe-payments.git"
+    "url": "git+https://github.com/bodonkey/stripe-payment.git"
   },
   "bugs": {
-    "url": "https://github.com/bodonkey/stripe-payments/issues"
+    "url": "https://github.com/bodonkey/stripe-payment/issues"
   },
-  "homepage": "https://github.com/bodonkey/stripe-payments#readme"
+  "homepage": "https://github.com/bodonkey/stripe-payment#readme"
 }

@@ -12,7 +12,7 @@ const CURRENCY_CONFIG = {
 export default {
   extend: '@apostrophecms/widget-type',
   options: {
-    label: 'stripeWidget:label',
+    label: 'Stripe Payment Widget',
     currencyConfig: CURRENCY_CONFIG
   },
   i18n: {

@@ -1,4 +1,4 @@
-# @bodonkey/stripe-payments
+# @bodonkey/stripe-payment
 
 A flexible Stripe payment integration module for ApostropheCMS that provides secure checkout functionality with customizable styling.
 
@@ -14,7 +14,7 @@ A flexible Stripe payment integration module for ApostropheCMS that provides sec
 ## Installation
 
 ```bash
-npm install @bodonkey/stripe-payments
+npm install @bodonkey/stripe-payment
 ```
 
 ## Quick Setup
@@ -25,7 +25,7 @@ In your `app.js`, add the module:
 
 ```javascript
 modules: {
-  '@bodonkey/stripe-payments': {
+  '@bodonkey/stripe-payment': {
     options: {
       // Your Stripe secret key (use environment variable)
       secretKey: process.env.STRIPE_SECRET_KEY,
@@ -55,7 +55,7 @@ Use the provided template helpers in your product templates:
 
 ```nunjucks
 <!-- Simple button (uses default styling) -->
-{{ apos.stripePayments.button({
+{{ apos.stripePayment.button({
   productId: product._id,
   price: product.price,
   name: product.title,
@@ -63,7 +63,7 @@ Use the provided template helpers in your product templates:
 }) }}
 
 <!-- Custom styled button -->
-{{ apos.stripePayments.button({
+{{ apos.stripePayment.button({
   productId: product._id,
   price: product.price,
   name: product.title,
@@ -96,7 +96,7 @@ Use the provided template helpers in your product templates:
 
 ## API Reference
 
-### Template Helper: `apos.stripePayments.button(options)`
+### Template Helper: `apos.stripePayment.button(options)`
 
 Creates a Stripe checkout button with the specified options.
 
@@ -112,7 +112,7 @@ Creates a Stripe checkout button with the specified options.
 
 ### REST API Endpoints
 
-- `POST /api/v1/stripe-payments/create-checkout`: Creates a new checkout session
+- `POST /api/v1/stripe-payment/create-checkout`: Creates a new checkout session
 - `GET /checkout/success`: Success page (customizable)
 - `GET /checkout/cancel`: Cancel page (customizable)
 
@@ -122,7 +122,7 @@ Creates a Stripe checkout button with the specified options.
 
 **Tailwind CSS:**
 ```nunjucks
-{{ apos.stripePayments.button({
+{{ apos.stripePayment.button({
   productId: product._id,
   price: product.price,
   name: product.title,
@@ -132,7 +132,7 @@ Creates a Stripe checkout button with the specified options.
 
 **Bootstrap:**
 ```nunjucks
-{{ apos.stripePayments.button({
+{{ apos.stripePayment.button({
   productId: product._id,
   price: product.price,
   name: product.title,
@@ -190,18 +190,18 @@ If you have existing button helpers (like in the e-commerce starter kit), you ca
 Create your own templates by extending the module:
 
 ```javascript
-// In your project's modules/stripe-payments/index.js
+// In your project's modules/stripe-payment/index.js
 export default {
-  extend: '@apostrophecms/stripe-payments',
+  extend: '@apostrophecms/stripe-payment',
   // Override default templates
-  // Your custom templates go in modules/stripe-payments/views/
+  // Your custom templates go in modules/stripe-payment/views/
 }
 ```
 
 ### Configuration Options
 
 ```javascript
-'@apostrophecms/stripe-payments': {
+'@apostrophecms/stripe-payment': {
   options: {
     currency: 'eur', // Change currency
     acceptedCurrencies: [ 'usd', 'eur', 'gbp', 'jpy', 'mxn' ], // Limit accepted currencies
@@ -254,7 +254,7 @@ When you're ready to go live:
 ```
 my-project/
 ├── modules/
-│   └── stripe-payments/          # Optional: for customizations
+│   └── stripe-payment/          # Optional: for customizations
 │       ├── index.js             # Extend the base module
 │       └── views/
 │           ├── success.html     # Custom success page
