@@ -4,6 +4,7 @@
   "description": "Stripe payment integration for ApostropheCMS",
   "main": "index.js",
   "type": "module",
+  "bundleModules": [ "stripe-payment", "stripe-button-widget" ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
