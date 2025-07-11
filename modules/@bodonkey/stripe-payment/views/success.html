@@ -3,78 +3,78 @@
 {% block title %}Payment Successful{% endblock %}
 
 {% block main %}
-  <div class="stripe-success-container">
-    {% if data.hasSession and data.session %}
-      <div class="stripe-success-content">
-        <div class="stripe-success-header">
-          <div class="stripe-success-icon">✓</div>
-          <h1>Payment Successful!</h1>
-          <p>Thank you for your purchase. Your order has been confirmed.</p>
-        </div>
+<div class="stripe-success-container">
+  {% if data.hasSession and data.session %}
+    <div class="stripe-success-content">
+      <div class="stripe-success-header">
+        <div class="stripe-success-icon">✓</div>
+        <h1>Payment Successful!</h1>
+        <p>Thank you for your purchase. Your order has been confirmed.</p>
+      </div>
 
-        <div class="stripe-order-details">
-          <h2>Order Details</h2>
-          <div class="stripe-detail-row">
-            <span>Order ID:</span>
-            <span>{{ data.session.id }}</span>
-          </div>
-          {% if data.session.customer_email %}
-          <div class="stripe-detail-row">
-            <span>Email:</span>
-            <span>{{ data.session.customer_email }}</span>
-          </div>
-          {% endif %}
-          {% if data.session.customer_name %}
-          <div class="stripe-detail-row">
-            <span>Customer:</span>
-            <span>{{ data.session.customer_name }}</span>
-          </div>
-          {% endif %}
-          <div class="stripe-detail-row">
-            <span>Amount:</span>
-            <span class="font-semibold">
-              {% if data.session.currency == 'jpy' or data.session.currency == 'krw' %}
-                {{ data.session.currency.upper() }} {{ data.session.amount_total }}
-              {% else %}
-                {{ data.session.currency.upper() }} {{ (data.session.amount_total / 100).toFixed(2) }}
-              {% endif %}
-            </span>
-          </div>
-          <div class="stripe-detail-row">
-            <span>Status:</span>
-            <span>{{ data.session.payment_status }}</span>
-          </div>
-          {% if data.session.created_date %}
-          <div class="stripe-detail-row">
-            <span>Date:</span>
-            <span>{{ data.session.created_date }}</span>
-          </div>
-          {% endif %}
+      <div class="stripe-order-details">
+        <h2>Order Details</h2>
+        <div class="stripe-detail-row">
+          <span>Order ID:</span>
+          <span data-type="order-id">{{ data.session.id }}</span>
         </div>
-
-        <div class="stripe-next-steps">
-          <p>A confirmation email has been sent to your email address.</p>
-          <div class="stripe-buttons">
-            {% if data.session.referrer_url %}
-            <a href="{{ data.session.referrer_url }}" class="stripe-button-primary">Continue Shopping</a>
+        {% if data.session.customer_email %}
+        <div class="stripe-detail-row">
+          <span>Email:</span>
+          <span>{{ data.session.customer_email }}</span>
+        </div>
+        {% endif %}
+        {% if data.session.customer_name %}
+        <div class="stripe-detail-row">
+          <span>Customer:</span>
+          <span>{{ data.session.customer_name }}</span>
+        </div>
+        {% endif %}
+        <div class="stripe-detail-row">
+          <span>Amount:</span>
+          <span>
+            {% if data.session.currency == 'jpy' or data.session.currency == 'krw' %}
+              {{ data.session.currency | upper }} {{ data.session.amount_total }}
+            {% else %}
+              {{ data.session.currency | upper }} {{ (data.session.amount_total / 100).toFixed(2) }}
             {% endif %}
-            <a href="{{ data.session.product_url }}" class="stripe-button-secondary">Return Home</a>
-          </div>
+          </span>
+        </div>
+        <div class="stripe-detail-row">
+          <span>Status:</span>
+          <span>{{ data.session.payment_status }}</span>
+        </div>
+        {% if data.session.created_date %}
+        <div class="stripe-detail-row">
+          <span>Date:</span>
+          <span>{{ data.session.created_date }}</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="stripe-next-steps">
+        <p>A confirmation email has been sent to your email address.</p>
+        <div class="stripe-buttons">
+          {% if data.session.referrer_url %}
+          <a href="{{ data.session.referrer_url }}" class="stripe-button-primary">Continue Shopping</a>
+          {% endif %}
+          <a href="{{ data.session.product_url }}" class="stripe-button-secondary">Return Home</a>
         </div>
       </div>
-    {% elif data.error %}
-      <div class="stripe-error-content">
-        <div class="stripe-error-icon">✗</div>
-        <h1>Payment Confirmation</h1>
-        <p>{{ data.error }}</p>
-        <a href="/" class="stripe-button-primary">Return Home</a>
-      </div>
-    {% else %}
-      <div class="stripe-simple-content">
-        <h1>Thank You!</h1>
-        <p>Your payment has been processed successfully.</p>
-        <a href="/" class="stripe-button-primary">Continue Shopping</a>
-      </div>
-    {% endif %}
-  </div>
+    </div>
+  {% elif data.error %}
+    <div class="stripe-error-content">
+      <div class="stripe-error-icon">✗</div>
+      <h1>Payment Confirmation</h1>
+      <p>{{ data.error }}</p>
+      <a href="/" class="stripe-button-primary">Return Home</a>
+    </div>
+  {% else %}
+    <div class="stripe-simple-content">
+      <h1>Thank You!</h1>
+      <p>Your payment has been processed successfully.</p>
+      <a href="/" class="stripe-button-primary">Continue Shopping</a>
+    </div>
+  {% endif %}
+</div>
 {% endblock %}

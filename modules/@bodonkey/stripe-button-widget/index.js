@@ -60,7 +60,7 @@ export default {
             value: code
           }))
         ],
-        def: ''
+        def: 'usd'
       },
       price: {
         type: 'float',

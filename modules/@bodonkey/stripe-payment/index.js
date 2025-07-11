@@ -110,10 +110,11 @@ export default {
       }
     };
   },
+  // Fixed apiRoutes section - replace the existing one
   apiRoutes(self) {
     return {
       post: {
-        async createCheckout(req) {
+        '/create-stripe-checkout': async (req, res) => {
           try {
             if (!self.stripe) {
               throw new Error(req.t('stripePayment:errors.stripeNotConfigured'));
@@ -142,7 +143,7 @@ export default {
 
             const stripeAmount = self.calculateStripeAmount(price, sessionCurrency);
 
-                        // Get base URL
+            // Get base URL
             let baseUrl = self.apos.page.getBaseUrl(req);
             if (!baseUrl) {
               const protocol = req.protocol;
@@ -202,6 +203,62 @@ export default {
               message: error.message,
               details: error.stack
             };
+          }
+        }
+      },
+    }
+  },
+  routes(self) {
+    return {
+      // Handle the checkout success page
+      get: {
+        '/checkout/success': async (req, res) => {
+          try {
+            let sessionData = null;
+            let error = null;
+            // Check if we have a session_id from Stripe
+            if (req.query.session_id) {
+              try {
+                // Retrieve the session from Stripe
+                const session = await self.stripe.checkout.sessions.retrieve(req.query.session_id);
+                // Extract relevant data for the template
+                sessionData = {
+                  id: session.id,
+                  amount_total: session.amount_total,
+                  currency: session.currency,
+                  customer_email: session.customer_details?.email,
+                  customer_name: session.customer_details?.name,
+                  payment_status: session.payment_status,
+                  // Format the date on the server side
+                  created_date: new Date(session.created * 1000).toLocaleDateString(),
+                  // Add referrer information from metadata
+                  referrer_url: session.metadata?.referrer_url || '/',
+                  product_url: session.metadata?.product_url || '/'
+                };
+                // Log successful payment for your records
+                self.apos.util.log(`Payment successful: ${session.id} - ${session.amount_total / 100} ${session.currency.toUpperCase()}`);
+              } catch (stripeError) {
+                self.apos.util.error('Error retrieving Stripe session:', stripeError);
+                error = 'Unable to retrieve payment information';
+              }
+            }
+            await self.sendPage(req, 'success', {
+              session: sessionData,
+              error: error,
+              hasSession: !!sessionData
+            });
+          } catch (error) {
+            self.apos.util.error('Error rendering success page:', error);
+            return res.status(500).send('error');
+          }
+        },
+
+        '/checkout/cancel': async (req, res) => {
+          try {
+            await self.sendPage(req, 'cancel', {});
+          } catch (error) {
+            self.apos.util.error('Error rendering cancel page:', error);
+            return res.status(500).send('error');
           }
         }
       }

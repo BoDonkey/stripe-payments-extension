@@ -17,7 +17,7 @@ export default () => {
     }
 
     try {
-      const response = await fetch('/api/v1/stripe-payments/create-checkout', {
+      const response = await fetch('create-stripe-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

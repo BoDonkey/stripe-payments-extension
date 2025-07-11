@@ -5,21 +5,30 @@
 
 {%- set buttonClass = 'stripe-checkout-button' -%}
 {%- if data.widget.buttonStyle == 'custom' and data.widget.customClass -%}
-  {%- set buttonClass = buttonClass + ' ' + data.widget.customClass -%}
+  {%- set buttonClass = buttonClass + ' stripe-button-custom ' + data.widget.customClass -%}
 {%- else -%}
-  {%- set buttonClass = buttonClass + ' stripe-button-' + data.widget.buttonStyle -%}
+  {%- set buttonClass = buttonClass + ' stripe-button-' + (data.widget.buttonStyle or 'primary') -%}
 {%- endif -%}
 
-{%- set currency = data.widget.currency or apos.modules['stripe-payment'].options.currency or 'usd' -%}
-{%- set formattedPrice = apos.modules['stripe-button-widget'].formatPrice(data.widget) -%}
-{%- set currencySymbol = apos.modules['stripe-button-widget'].getCurrencySymbol(data.widget) -%}
+{%- if data.widget.buttonSize -%}
+  {%- set buttonClass = buttonClass + ' stripe-button-' + data.widget.buttonSize -%}
+{%- endif -%}
 
-<button class="stripe-checkout-button stripe-button-{{ data.widget.buttonStyle or 'primary' }}"
+{%- if data.widget.fullWidth -%}
+  {%- set buttonClass = buttonClass + ' stripe-button-block' -%}
+{%- endif -%}
+
+{%- set currency = data.widget.currency or apos.modules['@bodonkey/stripe-payment'].options.currency or 'usd' -%}
+{%- set formattedPrice = apos.modules['@bodonkey/stripe-button-widget'].formatPrice(data.widget) -%}
+{%- set currencySymbol = apos.modules['@bodonkey/stripe-button-widget'].getCurrencySymbol(data.widget) -%}
+
+<button class="{{ buttonClass }}"
         data-product-id="widget-{{ data.widget._id }}"
         data-price="{{ data.widget.price }}"
         data-name="{{ data.widget.productName }}"
         data-currency="{{ currency }}"
-        data-image="{{ apos.attachment.url(data.widget.productImage, { size: 'one-half' }) if data.widget.productImage }}"
-        {{ 'disabled' if data.widget.disabled }}>
-  <span>{{ data.widget.buttonText }} - {{ currencySymbol }}{{ formattedPrice }}</span>
+        data-image="{{ imageUrl }}"
+        {{ 'disabled' if data.widget.disabled }}
+        aria-label="Purchase {{ data.widget.productName }} for {{ currencySymbol }}{{ formattedPrice }}">
+  <span>{{ data.widget.buttonText or 'Buy Now' }}{% if data.widget.showPrice %} - {{ currencySymbol }}{{ formattedPrice }}{% endif %}</span>
 </button>

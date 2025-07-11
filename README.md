@@ -112,7 +112,7 @@ Creates a Stripe checkout button with the specified options.
 
 ### REST API Endpoints
 
-- `POST /api/v1/stripe-payment/create-checkout`: Creates a new checkout session
+- `POST /api/v1/@bodonkey/stripe-payment/create-checkout`: Creates a new checkout session
 - `GET /checkout/success`: Success page (customizable)
 - `GET /checkout/cancel`: Cancel page (customizable)
 
