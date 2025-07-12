@@ -1,0 +1,154 @@
+<div class="container">
+  <div class="header">
+    <h1>✓ Order Confirmed</h1>
+    <p>Thank you for your purchase!</p>
+  </div>
+  <div class="content">
+    <p>
+      Hi {% if data.order.customerName %}{{ data.order.customerName }}{% else
+      %}there{% endif %},
+    </p>
+
+    <p>
+      Your payment has been successfully processed. Here are your order details:
+    </p>
+
+    <div class="order-details">
+      <div class="detail-row">
+        <span class="detail-label">Order ID:</span>
+        <span class="detail-value order-id">{{ data.order.id }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-label">Amount:</span>
+        <span class="detail-value">
+          {% if data.order.currency == 'jpy' or data.order.currency == 'krw' %}
+          {{ data.order.currency | upper }} {{ data.order.amount }} {% else %}
+          {{ data.order.currency | upper }} {{ (data.order.amount /
+          100).toFixed(2) }} {% endif %}
+        </span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-label">Status:</span>
+        <span class="detail-value">{{ data.order.status | capitalize }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-label">Date:</span>
+        <span class="detail-value">{{ data.order.date }}</span>
+      </div>
+
+      {% if data.order.customer.email %}
+      <div class="detail-row">
+        <span class="detail-label">Email:</span>
+        <span class="detail-value">{{ data.order.customerEmail }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <p>
+      If you have any questions about your order, please don't hesitate to
+      contact us.
+    </p>
+
+    <div style="text-align: center; margin: 30px 0">
+      <a href="{{ data.site.url }}" class="button">Continue Shopping</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>This email was sent by {{ data.site.name }}</p>
+    <p>{{ data.site.url }}</p>
+  </div>
+</div>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+  }
+  .container {
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .header {
+    background: #635bff;
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  .content {
+    padding: 30px 20px;
+  }
+  .order-details {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+  .detail-label {
+    font-weight: 500;
+    color: #6c757d;
+  }
+  .detail-value {
+    font-weight: 600;
+    color: #212529;
+  }
+  .order-id {
+    font-family: Monaco, Menlo, monospace;
+    font-size: 14px;
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    word-break: break-all;
+  }
+  .footer {
+    background: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 14px;
+  }
+  .button {
+    display: inline-block;
+    background: #635bff;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    margin: 10px 0;
+  }
+  @media (max-width: 600px) {
+    .container {
+      margin: 10px;
+      border-radius: 0;
+    }
+    .detail-row {
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+</style>

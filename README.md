@@ -94,6 +94,134 @@ Use the provided template helpers in your product templates:
 </button>
 ```
 
+# Email Confirmation Setup
+
+The Stripe Payment module can automatically send confirmation emails to customers after successful payments.
+
+## Configuration
+
+### Basic Setup
+
+```javascript
+// In your app.js
+'@bodonkey/stripe-payment': {
+  options: {
+    email: {
+      enabled: true,                      // Enable confirmation emails
+      fromAddress: 'orders@yourstore.com', // Required: sender email
+      fromName: 'Your Store Name',         // Sender name (optional)
+      subject: 'Order Confirmation'        // Email subject (optional)
+    }
+  }
+}
+```
+
+### Advanced Options
+
+```javascript
+email: {
+  enabled: true,                           // Enable/disable emails
+  fromAddress: 'orders@yourstore.com',     // Required: sender email
+  fromName: 'Your Store Name',             // Friendly sender name
+  ccToSender: true,                        // Send copy to sender email
+  replyTo: 'support@yourstore.com',        // Reply-to address (optional)
+  subject: 'Your Order Confirmation',      // Email subject line
+  template: 'stripe-confirmation',         // Template name (default: 'stripe-confirmation')
+  attachReceipt: false                     // Future: PDF receipt attachment
+}
+```
+
+## Email Template
+
+Create a template file at `views/emails/stripe-confirmation.html` in your project:
+
+```html
+<!-- See the email template example above -->
+```
+
+### Template Data Available
+
+The email template receives the following data:
+
+```javascript
+{
+  session: {/* Full Stripe session object */},
+  order: {
+    id: 'cs_...',           // Stripe session ID
+    amount: 1999,           // Amount in cents
+    currency: 'usd',        // Currency code
+    status: 'paid',         // Payment status
+    date: Date,             // Order date
+    customer: {             // Customer details
+      name: 'John Doe',
+      email: 'john@example.com'
+    }
+  },
+  site: {
+    name: 'Your Store',     // Site name
+    url: 'https://...'      // Base URL
+  }
+}
+```
+
+## Prerequisites
+
+1. **ApostropheCMS Email Module**: Make sure you have `@apostrophecms/email` configured:
+
+```javascript
+'@apostrophecms/email': {
+  options: {
+    transport: {
+      host: 'smtp.yourprovider.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      }
+    }
+  }
+}
+```
+
+2. **Environment Variables** (if using SMTP):
+```bash
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+```
+
+## Email Providers
+
+The module works with any email provider supported by ApostropheCMS:
+- SMTP (Gmail, Outlook, custom servers)
+- SendGrid
+- Mailgun
+- Amazon SES
+- Postmark
+
+## Testing
+
+To test email functionality:
+
+1. Enable emails in your configuration
+2. Make a test payment
+3. Check your email and the sender's email (if `ccToSender: true`)
+4. Monitor the ApostropheCMS logs for email status
+
+## Troubleshooting
+
+- **Emails not sending**: Check that `@apostrophecms/email` is properly configured
+- **Missing customer email**: Stripe Checkout will collect email automatically
+- **Template errors**: Ensure your template file exists and has valid syntax
+- **SMTP errors**: Verify your SMTP credentials and server settings
+
+## Security Notes
+
+- Never commit SMTP credentials to version control
+- Use environment variables for sensitive configuration
+- The `ccToSender` option sends a copy to your `fromAddress` - useful for order tracking
+- Customer emails are only sent if Stripe provides a customer email address
+
 ## API Reference
 
 ### Template Helper: `apos.stripePayment.button(options)`

@@ -31,6 +31,17 @@ export default {
       class: 'stripe-checkout-button',
       loadingTextKey: 'stripePayment:buttons.loading'
     },
+    // Email configuration options
+    email: {
+      enabled: false,                    // Enable/disable confirmation emails
+      fromAddress: null,                 // From email address (required if enabled)
+      fromName: 'Your Store',           // From name for emails
+      ccToSender: false,                // Send a copy to the from address
+      replyTo: null,                    // Reply-to address (optional)
+      subject: 'Order Confirmation',     // Email subject
+      template: 'stripe-confirmation',   // Email template name
+      attachReceipt: false              // Attach PDF receipt (future feature)
+    }
   },
   i18n: {
     stripePayment: {
@@ -50,6 +61,21 @@ export default {
       self.apos.util.log('Stripe payments module initialized successfully');
     } else {
       self.apos.util.warn('Warning: Stripe secret key not found. Set APOS_STRIPE_SECRET_KEY environment variable or pass apiSecret in module options. Stripe functionality will not work.');
+    }
+
+    // Validate email configuration if enabled
+    if (self.options.email.enabled) {
+      if (!self.options.email.fromAddress) {
+        throw new Error('Stripe payments: email.fromAddress is required when email.enabled is true');
+      }
+      console.log('self.apo.modules', self.apos.modules['@apostrophecms/email']);
+      // Check if ApostropheCMS email module is available
+      if (!self.apos.modules['@apostrophecms/email']) {
+        self.apos.util.warn('Warning: Email module not available. Stripe confirmation emails will not be sent.');
+        self.options.email.enabled = false;
+      } else {
+        self.apos.util.log('Stripe confirmation emails enabled');
+      }
     }
   },
   methods(self) {
@@ -74,6 +100,65 @@ export default {
         return config.decimals === 0
           ? Math.round(amount).toString()
           : amount.toFixed(config.decimals);
+      },
+
+      async sendConfirmationEmail(sessionData, req) {
+        if (!self.options.email.enabled || !self.apos.modules['@apostrophecms/email']) {
+          return;
+        }
+
+        try {
+          const emailData = {
+            session: sessionData,
+            order: {
+              id: sessionData.id,
+              amount: sessionData.amount_total,
+              currency: sessionData.currency,
+              status: sessionData.payment_status,
+              date: sessionData.created_date,
+              customerName: sessionData.customer_name,
+              customerEmail: sessionData.customer_email
+            },
+            site: {
+              name: self.apos.shortName || 'Your Store',
+              url: self.apos.page.getBaseUrl(req) || req.protocol + '://' + req.get('host')
+            }
+          };
+
+          const recipients = [sessionData.customer_email].filter(Boolean);
+
+          // Add CC to sender if enabled
+          const ccRecipients = [];
+          if (self.options.email.ccToSender && self.options.email.fromAddress) {
+            ccRecipients.push(self.options.email.fromAddress);
+          }
+
+          if (recipients.length === 0) {
+            self.apos.util.warn('No customer email found for order confirmation:', sessionData.id);
+            return;
+          }
+
+          const emailOptions = {
+            to: recipients,
+            cc: ccRecipients.length > 0 ? ccRecipients : undefined,
+            from: self.options.email.fromAddress,
+            fromName: self.options.email.fromName,
+            replyTo: self.options.email.replyTo || self.options.email.fromAddress,
+            subject: self.options.email.subject
+          };
+
+          await self.email(req, self.options.email.template, emailData, emailOptions);
+
+          self.apos.util.log(`Confirmation email sent for order: ${sessionData.id} to ${recipients.join(', ')}`);
+
+          if (ccRecipients.length > 0) {
+            self.apos.util.log(`CC sent to: ${ccRecipients.join(', ')}`);
+          }
+
+        } catch (error) {
+          self.apos.util.error('Failed to send confirmation email:', error);
+          // Don't throw - email failure shouldn't break the success page
+        }
       }
     }
   },
@@ -110,7 +195,6 @@ export default {
       }
     };
   },
-  // Fixed apiRoutes section - replace the existing one
   apiRoutes(self) {
     return {
       post: {
@@ -205,7 +289,7 @@ export default {
             };
           }
         }
-      },
+      }
     }
   },
   routes(self) {
@@ -237,6 +321,7 @@ export default {
                 };
                 // Log successful payment for your records
                 self.apos.util.log(`Payment successful: ${session.id} - ${session.amount_total / 100} ${session.currency.toUpperCase()}`);
+                self.sendConfirmationEmail(sessionData, req);
               } catch (stripeError) {
                 self.apos.util.error('Error retrieving Stripe session:', stripeError);
                 error = 'Unable to retrieve payment information';
