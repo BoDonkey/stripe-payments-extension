@@ -1,15 +1,5 @@
 import Stripe from 'stripe';
-
-const CURRENCY_CONFIG = {
-  usd: { decimals: 2, min: 0.01, symbol: '$', label: 'US Dollar' },
-  eur: { decimals: 2, min: 0.01, symbol: '€', label: 'Euro' },
-  gbp: { decimals: 2, min: 0.01, symbol: '£', label: 'British Pound' },
-  jpy: { decimals: 0, min: 1, symbol: '¥', label: 'Japanese Yen' },
-  cad: { decimals: 2, min: 0.01, symbol: 'C$', label: 'Canadian Dollar' },
-  aud: { decimals: 2, min: 0.01, symbol: 'A$', label: 'Australian Dollar' },
-  krw: { decimals: 0, min: 1, symbol: '₩', label: 'South Korean Won' },
-  kwd: { decimals: 3, min: 0.001, symbol: 'KD', label: 'Kuwaiti Dinar' }
-};
+import { CURRENCY_CONFIG } from './lib/currencies';
 
 export default {
   extend: '@apostrophecms/module',
@@ -220,7 +210,7 @@ export default {
             if (!acceptedCurrencies.includes(sessionCurrency.toLowerCase())) {
               return {
                 status: 'error',
-                message: `Unsupported currency: ${sessionCurrency}`,
+                message: req.t('stripePayment:errors.unsupportedCurrency'),
                 acceptedCurrencies
               };
             }
@@ -281,7 +271,7 @@ export default {
               sessionId: session.id
             };
           } catch (error) {
-            console.error('Stripe error details:', error);
+            self.apos.util.error('Stripe error details:', error);
             return {
               status: 'error',
               message: error.message,

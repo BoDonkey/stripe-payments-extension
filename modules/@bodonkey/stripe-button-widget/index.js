@@ -1,13 +1,4 @@
-const CURRENCY_CONFIG = {
-  usd: { decimals: 2, min: 0.01, symbol: '$', label: 'US Dollar' },
-  eur: { decimals: 2, min: 0.01, symbol: '€', label: 'Euro' },
-  gbp: { decimals: 2, min: 0.01, symbol: '£', label: 'British Pound' },
-  jpy: { decimals: 0, min: 1, symbol: '¥', label: 'Japanese Yen' },
-  cad: { decimals: 2, min: 0.01, symbol: 'C$', label: 'Canadian Dollar' },
-  aud: { decimals: 2, min: 0.01, symbol: 'A$', label: 'Australian Dollar' },
-  krw: { decimals: 0, min: 1, symbol: '₩', label: 'South Korean Won' },
-  kwd: { decimals: 3, min: 0.001, symbol: 'KD', label: 'Kuwaiti Dinar' }
-};
+import { CURRENCY_CONFIG } from "../stripe-payment/lib/currencies";
 
 export default {
   extend: '@apostrophecms/widget-type',
@@ -23,7 +14,7 @@ export default {
   init(self) {
     // Check if the payment module is available
     if (!self.apos.modules['@bodonkey/stripe-payment']) {
-      throw new Error( 'error one'
+      throw new Error( 'stripe-button-widget requires the stripe-payment module. Make sure both modules are installed and configured.'
       );
     }
 
@@ -31,7 +22,7 @@ export default {
     const paymentModule = self.apos.modules['@bodonkey/stripe-payment'];
     if (!paymentModule.stripe) {
       self.apos.util.warn(
-        'Error Two'
+        'Stripe payment module is not configured. Set APOS_STRIPE_SECRET_KEY environment variable.'
       );
     }
   },
@@ -39,7 +30,7 @@ export default {
     add: {
       buttonText: {
         type: 'string',
-        label: 'stripeWidget:buttonText.lable',
+        label: 'stripeWidget:buttonText.label',
         help: 'stripeWidget:buttonText.help',
         required: true
       },
@@ -51,10 +42,10 @@ export default {
       },
       currency: {
         type: 'select',
-        label: 'StripeWidget:currency.label',
-        help: 'StripeWidget:currency.help',
+        label: 'stripeWidget:currency.label',
+        help: 'stripeWidget:currency.help',
         choices: [
-          { label: 'stripeWidget:currency.siteDefault', value: '' },
+          { label: 'stripeWidget:currency.choices.siteDefault', value: '' },
           ...Object.entries(CURRENCY_CONFIG).map(([code, config]) => ({
             label: `${config.label} (${code.toUpperCase()})`,
             value: code
@@ -94,8 +85,8 @@ export default {
       },
       disabled: {
         type: 'boolean',
-        label: 'styleWidget:disabled.label',
-        help: 'styleWidget:disabled.help',
+        label: 'stripeWidget:disabled.label',
+        help: 'stripeWidget:disabled.help',
         def: false
       }
     },

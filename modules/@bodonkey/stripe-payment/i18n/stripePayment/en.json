@@ -41,5 +41,21 @@
     "invalidPrice": "Price must be at least {{min}} {{currency}}.",
     "tooManyDecimals": "{{currency}} supports maximum {{decimals}} decimal places.",
     "configurationWarning": "⚠️ Stripe Not Configured<br>Set the <code>APOS_STRIPE_SECRET_KEY</code> environment variable to enable payment buttons.<br><small>This message is only visible to logged-in administrators.</small>"
+  },
+  "currency": {
+    "label": "Currency",
+    "help": "Leave blank to use site default",
+    "choices": {
+      "siteDefault": "Site Default",
+      "usDollar": "U.S. Dollar",
+      "euro": "Euro",
+      "japaneseYen": "Japanese Yen",
+      "britishPound": "British Pound Sterling",
+      "canadianDollar": "Canadian Dollar",
+      "australianDollar": "Australian Dollar",
+      "southKoreanWon": "South Korean Won",
+      "swissFranc": "Swiss Franc",
+      "chineseYuan": "Chinese Yuan"
+    }
   }
 }
