@@ -94,13 +94,11 @@ Use the provided template helpers in your product templates:
 </button>
 ```
 
-# Email Confirmation Setup
+## Email Confirmation Setup
 
 The Stripe Payment module can automatically send confirmation emails to customers after successful payments.
 
-## Configuration
-
-### Basic Setup
+### Configuration
 
 ```javascript
 // In your app.js
@@ -131,7 +129,7 @@ email: {
 }
 ```
 
-## Email Template
+### Email Template
 
 Create a template file at `views/emails/stripe-confirmation.html` in your project:
 
@@ -164,7 +162,7 @@ The email template receives the following data:
 }
 ```
 
-## Prerequisites
+### Prerequisites
 
 1. **ApostropheCMS Email Module**: Make sure you have `@apostrophecms/email` configured:
 
@@ -190,7 +188,7 @@ SMTP_USER=your-smtp-username
 SMTP_PASS=your-smtp-password
 ```
 
-## Email Providers
+### Email Providers
 
 The module works with any email provider supported by ApostropheCMS:
 - SMTP (Gmail, Outlook, custom servers)
@@ -199,7 +197,7 @@ The module works with any email provider supported by ApostropheCMS:
 - Amazon SES
 - Postmark
 
-## Testing
+### Testing
 
 To test email functionality:
 
@@ -208,14 +206,14 @@ To test email functionality:
 3. Check your email and the sender's email (if `ccToSender: true`)
 4. Monitor the ApostropheCMS logs for email status
 
-## Troubleshooting
+### Troubleshooting
 
 - **Emails not sending**: Check that `@apostrophecms/email` is properly configured
 - **Missing customer email**: Stripe Checkout will collect email automatically
 - **Template errors**: Ensure your template file exists and has valid syntax
 - **SMTP errors**: Verify your SMTP credentials and server settings
 
-## Security Notes
+### Security Notes
 
 - Never commit SMTP credentials to version control
 - Use environment variables for sensitive configuration
@@ -348,7 +346,7 @@ export default {
 }
 ```
 
-## Testing
+### Testing
 
 Use Stripe's test card numbers for development:
 
