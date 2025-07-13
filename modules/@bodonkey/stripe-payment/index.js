@@ -1,10 +1,10 @@
 import Stripe from 'stripe';
-import { CURRENCY_CONFIG } from './lib/currencies';
+import { CURRENCY_CONFIG } from './lib/currencies.js';
 
 export default {
   extend: '@apostrophecms/module',
   options: {
-    alias: 'stripePayments',
+    alias: 'stripePayment',
     currency: 'usd',
     currencyConfig: CURRENCY_CONFIG,
     acceptedCurrencies: ['usd'],
@@ -58,7 +58,6 @@ export default {
       if (!self.options.email.fromAddress) {
         throw new Error('Stripe payments: email.fromAddress is required when email.enabled is true');
       }
-      console.log('self.apo.modules', self.apos.modules['@apostrophecms/email']);
       // Check if ApostropheCMS email module is available
       if (!self.apos.modules['@apostrophecms/email']) {
         self.apos.util.warn('Warning: Email module not available. Stripe confirmation emails will not be sent.');
@@ -152,6 +151,8 @@ export default {
       }
     }
   },
+  // In your helpers section of modules/@bodonkey/stripe-payment/index.js
+
   helpers(self) {
     return {
       button(options = {}) {
@@ -167,7 +168,7 @@ export default {
         } = options;
 
         if (!productId || !price || !name) {
-          return '<div class="error">Missing required payment button parameters</div>';
+          return self.apos.template.safe('<div class="error">Missing required payment button parameters</div>');
         }
 
         const dataAttrs = [
@@ -181,7 +182,10 @@ export default {
         const styleAttr = style ? ` style="${self.apos.util.escapeHtml(style)}"` : '';
         const disabledAttr = disabled ? ' disabled' : '';
 
-        return `<button${classAttr}${styleAttr}${disabledAttr} ${dataAttrs}><span>${self.apos.util.escapeHtml(buttonText)}</span></button>`;
+        const html = `<button${classAttr}${styleAttr}${disabledAttr} ${dataAttrs}><span>${self.apos.util.escapeHtml(buttonText)}</span></button>`;
+
+        // Return safe HTML that doesn't need the |safe filter
+        return self.apos.template.safe(html);
       }
     };
   },

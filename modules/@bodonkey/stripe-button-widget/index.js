@@ -1,4 +1,4 @@
-import { CURRENCY_CONFIG } from "../stripe-payment/lib/currencies";
+import { CURRENCY_CONFIG } from "../stripe-payment/lib/currencies.js";
 
 export default {
   extend: '@apostrophecms/widget-type',

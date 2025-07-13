@@ -1,170 +1,73 @@
 # @bodonkey/stripe-payments-extension
 
-A flexible Stripe payment integration module for ApostropheCMS that provides secure checkout functionality with customizable styling.
+A complete Stripe payment integration for ApostropheCMS that provides secure checkout functionality with customizable styling and automatic email confirmations.
 
-## Features
+## 🚀 Features
 
-- 🚀 **Easy Integration**: Simple one-click checkout with Stripe
-- 🎨 **Flexible Styling**: Works with any CSS framework or custom styles
-- 🛡️ **Secure**: Uses Stripe's hosted checkout for PCI compliance
-- 📱 **Responsive**: Mobile-friendly payment flows
-- 🔧 **Configurable**: Customizable success/cancel pages
-- 📊 **Developer Friendly**: Clean API and template helpers
+- **🔒 Secure Payments**: PCI-compliant checkout using Stripe's hosted solution
+- **🎨 Flexible Design**: Works with any CSS framework (Tailwind, Bootstrap, custom)
+- **📧 Email Confirmations**: Automatic (optional) order confirmation emails to customers
+- **🌍 Multi-Currency**: Support for 9 major currencies with proper formatting
+- **📱 Mobile Responsive**: Optimized for all device sizes
+- **🛠️ Developer Friendly**: Clean APIs, template helpers, and widget system
+- **⚡ Easy Integration**: One-click checkout buttons via widgets or template helpers
 
-## Installation
+## 📦 What's Included
+
+This extension provides two complementary modules:
+
+### Core Payment Module (`@bodonkey/stripe-payment`)
+The foundation that handles Stripe integration, payment processing, success/cancel pages, and email confirmations. Use this if you want to build custom checkout flows.
+
+### Button Widget (`@bodonkey/stripe-button-widget`)
+An optional drag-and-drop widget for the ApostropheCMS admin interface that lets content editors easily add "Buy Now" buttons to any area without coding.
+
+## 🛠️ Installation
 
 ```bash
 npm install @bodonkey/stripe-payments-extension
 ```
 
-## Quick Setup
+## ⚡ Quick Setup
 
-### 1. Add to your project
+### 1. Configure Your Project
 
-In your `app.js`, add the module:
+Add the core module to your `app.js`. If desired, also add the button widget module:
 
 ```javascript
 modules: {
   '@bodonkey/stripe-payment': {
     options: {
-      // Your Stripe secret key (use environment variable)
-      secretKey: process.env.STRIPE_SECRET_KEY,
-      // Optional: currency (defaults to 'usd')
-      currency: 'usd',
-      // Optional: custom success/cancel URLs
-      successUrl: '/checkout/success',
-      cancelUrl: '/checkout/cancel'
+      currency: 'usd',                    // Default currency
+      successUrl: '/checkout/success',    // Custom success page (optional)
+      cancelUrl: '/checkout/cancel',      // Custom cancel page (optional)
+
+      // Email confirmation settings
+      email: {
+        enabled: true,
+        fromAddress: 'orders@yourstore.com',
+        fromName: 'Your Store Name',
+        subject: 'Order Confirmation'
+      }
     }
-  }
+  },
+  '@bodonkey/stripe-button-widget': {}   // Enables the admin widget
 }
 ```
 
-### 2. Set environment variable
+### 2. Set Your Stripe Key
 
 Create a `.env` file or set your environment variable:
 
 ```bash
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
-```
-> [!WARNING]
-> Make sure if you create an `.env` file with your key to add it to your `.gitignore` file.
-
-### 3. Add payment buttons to your templates
-
-Use the provided template helpers in your product templates:
-
-```nunjucks
-<!-- Simple button (uses default styling) -->
-{{ apos.stripePayment.button({
-  productId: product._id,
-  price: product.price,
-  name: product.title,
-  image: apos.attachment.url(product.image)
-}) }}
-
-<!-- Custom styled button -->
-{{ apos.stripePayment.button({
-  productId: product._id,
-  price: product.price,
-  name: product.title,
-  image: apos.attachment.url(product.image),
-  buttonText: 'Buy Now',
-  class: 'my-custom-button-class',
-  style: 'background: blue; color: white; padding: 10px;'
-}) }}
-
-<!-- Use different currency than default
--->
-<button class="stripe-checkout-button btn btn-primary"
-        data-product-id="{{ product._id }}"
-        data-price="{{ product.price }}"
-        data-name="{{ product.title }}"
-        data-currency="jpy"
-        data-image="{{ apos.attachment.url(product.image) }}">
-  Buy for ¥{{ product.price }}
-</button>
-
-<!-- Using with existing button helpers (e.g., Tailwind/Bootstrap) -->
-<button class="btn btn-primary stripe-checkout-button"
-        data-product-id="{{ product._id }}"
-        data-price="{{ product.price }}"
-        data-name="{{ product.title }}"
-        data-image="{{ apos.attachment.url(product.image) }}">
-  Buy Now with Stripe
-</button>
+APOS_STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
 ```
 
-## Email Confirmation Setup
+> **⚠️ Important**: Add `.env` to your `.gitignore` file to keep your keys secure.
 
-The Stripe Payment module can automatically send confirmation emails to customers after successful payments.
+### 3. Configure Email (Optional)
 
-### Configuration
-
-```javascript
-// In your app.js
-'@bodonkey/stripe-payment': {
-  options: {
-    email: {
-      enabled: true,                      // Enable confirmation emails
-      fromAddress: 'orders@yourstore.com', // Required: sender email
-      fromName: 'Your Store Name',         // Sender name (optional)
-      subject: 'Order Confirmation'        // Email subject (optional)
-    }
-  }
-}
-```
-
-### Advanced Options
-
-```javascript
-email: {
-  enabled: true,                           // Enable/disable emails
-  fromAddress: 'orders@yourstore.com',     // Required: sender email
-  fromName: 'Your Store Name',             // Friendly sender name
-  ccToSender: true,                        // Send copy to sender email
-  replyTo: 'support@yourstore.com',        // Reply-to address (optional)
-  subject: 'Your Order Confirmation',      // Email subject line
-  template: 'stripe-confirmation',         // Template name (default: 'stripe-confirmation')
-  attachReceipt: false                     // Future: PDF receipt attachment
-}
-```
-
-### Email Template
-
-Create a template file at `views/emails/stripe-confirmation.html` in your project:
-
-```html
-<!-- See the email template example above -->
-```
-
-### Template Data Available
-
-The email template receives the following data:
-
-```javascript
-{
-  session: {/* Full Stripe session object */},
-  order: {
-    id: 'cs_...',           // Stripe session ID
-    amount: 1999,           // Amount in cents
-    currency: 'usd',        // Currency code
-    status: 'paid',         // Payment status
-    date: Date,             // Order date
-    customer: {             // Customer details
-      name: 'John Doe',
-      email: 'john@example.com'
-    }
-  },
-  site: {
-    name: 'Your Store',     // Site name
-    url: 'https://...'      // Base URL
-  }
-}
-```
-
-### Prerequisites
-
-1. **ApostropheCMS Email Module**: Make sure you have `@apostrophecms/email` configured:
+If you want confirmation emails, ensure you have the ApostropheCMS email module configured:
 
 ```javascript
 '@apostrophecms/email': {
@@ -182,69 +85,68 @@ The email template receives the following data:
 }
 ```
 
-2. **Environment Variables** (if using SMTP):
-```bash
-SMTP_USER=your-smtp-username
-SMTP_PASS=your-smtp-password
+## 🎯 Usage Options
+
+> [!NOTE]
+> Images will not be displayed in development because they require a web-accessible URL.
+
+### Option 1: Drag-and-Drop Widget
+
+Perfect for content editors who need to add payment buttons without touching code.
+
+1. **Edit any page** in the ApostropheCMS admin
+2. **Add a widget** to any area
+3. **Choose "Stripe Payment Button"**
+4. **Configure your product**:
+   - Product name and price
+   - Button text and styling
+   - Optional product image
+   - Currency selection
+
+The widget provides a user-friendly interface with organized tabs for content, advanced settings, and styling options.
+
+### Option 2: Template Helper (For Developers)
+
+Use the template helper when you need programmatic control or want to integrate with existing product data:
+
+```nunjucks
+<!-- Basic usage -->
+{{ apos.stripePayment.button({
+  productId: product._id,
+  price: product.price,
+  name: product.title,
+  image: apos.attachment.url(product.image)
+}) }}
+
+<!-- With custom styling -->
+{{ apos.stripePayment.button({
+  productId: product._id,
+  price: product.price,
+  name: product.title,
+  buttonText: 'Buy Now - $' + product.price,
+  class: 'btn btn-primary btn-lg',
+  style: 'margin: 10px;'
+}) }}
 ```
 
-### Email Providers
+### Option 3: Custom HTML (Advanced)
 
-The module works with any email provider supported by ApostropheCMS:
-- SMTP (Gmail, Outlook, custom servers)
-- SendGrid
-- Mailgun
-- Amazon SES
-- Postmark
+For maximum control, add the required data attributes to any HTML element:
 
-### Testing
+```html
+<button class="stripe-checkout-button my-custom-class"
+        data-product-id="{{ product._id }}"
+        data-price="{{ product.price }}"
+        data-name="{{ product.title }}"
+        data-currency="usd"
+        data-image="{{ apos.attachment.url(product.image) }}">
+  Buy {{ product.title }} - ${{ product.price }}
+</button>
+```
 
-To test email functionality:
+## 🎨 Styling & Customization
 
-1. Enable emails in your configuration
-2. Make a test payment
-3. Check your email and the sender's email (if `ccToSender: true`)
-4. Monitor the ApostropheCMS logs for email status
-
-### Troubleshooting
-
-- **Emails not sending**: Check that `@apostrophecms/email` is properly configured
-- **Missing customer email**: Stripe Checkout will collect email automatically
-- **Template errors**: Ensure your template file exists and has valid syntax
-- **SMTP errors**: Verify your SMTP credentials and server settings
-
-### Security Notes
-
-- Never commit SMTP credentials to version control
-- Use environment variables for sensitive configuration
-- The `ccToSender` option sends a copy to your `fromAddress` - useful for order tracking
-- Customer emails are only sent if Stripe provides a customer email address
-
-## API Reference
-
-### Template Helper: `apos.stripePayment.button(options)`
-
-Creates a Stripe checkout button with the specified options.
-
-**Options:**
-- `productId` (required): Unique identifier for the product
-- `price` (required): Price in dollars (e.g., 29.99)
-- `name` (required): Product name to display in checkout
-- `image` (optional): Product image URL
-- `buttonText` (optional): Button text (default: "Buy Now")
-- `class` (optional): CSS classes to add to the button
-- `style` (optional): Inline CSS styles
-- `disabled` (optional): Whether button should be disabled
-
-### REST API Endpoints
-
-- `POST /api/v1/@bodonkey/stripe-payment/create-checkout`: Creates a new checkout session
-- `GET /checkout/success`: Success page (customizable)
-- `GET /checkout/cancel`: Cancel page (customizable)
-
-## Styling Guide
-
-### Using with CSS Frameworks
+### CSS Framework Integration
 
 **Tailwind CSS:**
 ```nunjucks
@@ -266,7 +168,16 @@ Creates a Stripe checkout button with the specified options.
 }) }}
 ```
 
-**Custom CSS:**
+### Widget Styling Options
+
+The button widget includes predefined styles:
+- **Primary**: Modern gradient blue (default)
+- **Secondary**: Professional gray
+- **Success**: Green confirmation style
+- **Custom**: Use your own CSS classes
+
+### Custom CSS Example
+
 ```css
 .my-stripe-button {
   background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
@@ -281,118 +192,299 @@ Creates a Stripe checkout button with the specified options.
 
 .my-stripe-button:hover {
   transform: translateY(-2px);
-}
-
-.my-stripe-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 ```
 
-### Using with Existing Button Helpers
+## 💰 Currency Support
 
-If you have existing button helpers (like in the e-commerce starter kit), you can use them:
+Supported currencies with automatic formatting:
 
-```nunjucks
-{# E-commerce starter kit example #}
-{{ buttons.primary(
-  'Buy Now with Stripe',
-  {
-    cls: 'stripe-checkout-button',
-    data: {
-      'product-id': product._id,
-      'price': product.price,
-      'name': product.title,
-      'image': apos.attachment.url(product.image)
+| Currency | Code | Symbol | Decimal Places |
+|----------|------|--------|----------------|
+| US Dollar | USD | $ | 2 |
+| Euro | EUR | € | 2 |
+| British Pound | GBP | £ | 2 |
+| Japanese Yen | JPY | ¥ | 0 |
+| Canadian Dollar | CAD | C$ | 2 |
+| Australian Dollar | AUD | A$ | 2 |
+| South Korean Won | KRW | ₩ | 0 |
+| Swiss Franc | CHF | CHF | 2 |
+| Chinese Yuan | CNY | ¥ | 2 |
+
+Configure accepted currencies in your module options:
+
+```javascript
+'@bodonkey/stripe-payment': {
+  options: {
+    currency: 'usd',
+    acceptedCurrencies: ['usd', 'eur', 'gbp', 'cad']
+  }
+}
+```
+
+## 📧 Email Confirmations
+
+### Stripe vs. Custom Emails
+
+You have two options for order confirmation emails:
+
+**Option 1: Stripe's Built-in Emails** *(Recommended for simplicity)*
+- Enable in your Stripe Dashboard under Settings → Emails
+- Automatic, reliable, and requires no setup
+- Limited customization options
+
+**Option 2: Custom ApostropheCMS Emails** *(Recommended for branding)*
+- Full control over design and content
+- Matches your site's branding
+- Requires email module configuration
+
+### Custom Email Configuration
+
+```javascript
+'@bodonkey/stripe-payment': {
+  options: {
+    email: {
+      enabled: true,                       // Enable confirmation emails
+      fromAddress: 'orders@yourstore.com', // Required sender email
+      fromName: 'Your Store Name',         // Friendly sender name
+      ccToSender: true,                    // Send copy to your email
+      replyTo: 'support@yourstore.com',    // Reply-to address
+      subject: 'Your Order Confirmation',  // Email subject
+      template: 'stripe-confirmation'      // Custom template name
     }
   }
-) }}
+}
 ```
 
-## Customization
+### Email Template Data
+
+The core module comes with an email template that can be used, but for a custom template, create a file at project level: `modules/@bodonkey/stripe-payment/views/emails/stripe-confirmation.html`. The template receives the same session data as the success page:
+
+```html
+<!-- Available template data: -->
+{{ data.session.id }}                    <!-- Stripe session ID -->
+{{ data.session.amount_total }}          <!-- Amount in cents -->
+{{ data.session.currency }}              <!-- Currency code -->
+{{ data.session.customer_name }}         <!-- Customer name -->
+{{ data.session.customer_email }}        <!-- Customer email -->
+{{ data.session.payment_status }}        <!-- Payment status -->
+{{ data.session.created_date }}          <!-- Order date -->
+{{ data.session.metadata.product_id }}   <!-- Your custom metadata -->
+{{ data.session.metadata.source }}       <!-- Custom tracking data -->
+{{ data.site.name }}                     <!-- Your site name -->
+{{ data.site.url }}                      <!-- Your site URL -->
+
+<!-- Complete order data structure: -->
+{{ data.order.id }}              <!-- Same as session.id -->
+{{ data.order.amount }}          <!-- Same as session.amount_total -->
+{{ data.order.currency }}        <!-- Same as session.currency -->
+{{ data.order.customerName }}    <!-- Same as session.customer_name -->
+{{ data.order.customerEmail }}   <!-- Same as session.customer_email -->
+{{ data.order.status }}          <!-- Same as session.payment_status -->
+{{ data.order.date }}            <!-- Same as session.created_date -->
+```
+
+## ⚙️ Advanced Configuration
+
+### Complete Options Reference
+
+```javascript
+'@bodonkey/stripe-payment': {
+  options: {
+    // Basic settings
+    currency: 'usd',
+    acceptedCurrencies: ['usd', 'eur', 'gbp'],
+
+    // Page URLs
+    successUrl: '/checkout/success',
+    cancelUrl: '/checkout/cancel',
+
+    // Stripe Checkout options
+    collectShipping: false,
+    collectPhone: false,
+    allowPromotionCodes: true,
+
+    // Custom metadata for all transactions
+    metadata: {
+      source: 'website',
+      version: '1.0',
+      campaign: 'holiday-sale'
+    },
+
+    // Email settings
+    email: {
+      enabled: true,
+      fromAddress: 'orders@yourstore.com',
+      fromName: 'Your Store',
+      ccToSender: false,
+      subject: 'Order Confirmation'
+    }
+  }
+}
+```
 
 ### Custom Success/Cancel Pages
 
-Create your own templates by extending the module:
+Override default templates by creating custom views in your project:
+
+**File Locations:**
+- `modules/@bodonkey/stripe-payment/views/success.html`
+- `modules/@bodonkey/stripe-payment/views/cancel.html`
+
+**Available Template Data (Success Page):**
 
 ```javascript
-// In your project's modules/stripe-payment/index.js
-export default {
-  extend: '@apostrophecms/stripe-payment',
-  // Override default templates
-  // Your custom templates go in modules/stripe-payment/views/
+{
+  hasSession: true,              // Whether session data is available
+  session: {
+    id: 'cs_...',               // Stripe session ID
+    amount_total: 2999,          // Amount in cents
+    currency: 'usd',             // Currency code
+    customer_email: 'user@example.com',
+    customer_name: 'John Doe',
+    payment_status: 'paid',      // Payment status
+    created_date: '12/25/2024',  // Formatted date
+    product_url: '/products/...',// Original product page
+    referrer_url: '/',           // Where to redirect back
+    metadata: {                  // Custom metadata you set
+      product_id: 'widget-123',
+      source: 'website'
+    }
+  },
+  error: null                    // Error message if session retrieval failed
 }
 ```
 
-### Configuration Options
+**Example Custom Success Template:**
 
-```javascript
-'@apostrophecms/stripe-payment': {
-  options: {
-    currency: 'eur', // Change currency
-    acceptedCurrencies: [ 'usd', 'eur', 'gbp', 'jpy', 'mxn' ], // Limit accepted currencies
-    currencyConfig: {
-      mxn: { decimals: 2, min: 0.01, symbol: '$', label: 'Mexican Peso' }
-    }, 
-    // Add custom currencies
-    collectShipping: true, // Collect shipping address
-    collectPhone: true, // Collect phone number
-    allowPromotionCodes: true, // Enable promo codes
-    // Custom metadata
-    metadata: {
-      source: 'website'
-    }
+```html
+{% extends "layout.html" %}
+{% block main %}
+<div class="success-page">
+  {% if data.hasSession %}
+    <h1>Thank You!</h1>
+    <p>Order #{{ data.session.id }}</p>
+
+    <!-- Access your custom metadata -->
+    {% if data.session.metadata.product_id %}
+      <p>Product ID: {{ data.session.metadata.product_id }}</p>
+    {% endif %}
+
+    <a href="{{ data.session.referrer_url }}">Continue Shopping</a>
+  {% endif %}
+</div>
+{% endblock %}
+```
+
+## 🧪 Testing
+
+Use Stripe's test card numbers during development:
+
+- **✅ Success**: `4242 4242 4242 4242`
+- **❌ Decline**: `4000 0000 0000 0002`
+- **🔐 3D Secure**: `4000 0000 0000 3220`
+
+## 🚀 Production Deployment
+
+### Security Checklist
+
+- ✅ Use live Stripe keys (`sk_live_...`) in production
+- ✅ Set `APOS_STRIPE_SECRET_KEY` environment variable
+- ✅ Never commit API keys to version control
+- ✅ Add `.env` to `.gitignore`
+- ✅ Test thoroughly with small amounts first
+
+### Environment Setup
+
+```bash
+# Production
+export APOS_STRIPE_SECRET_KEY=sk_live_your_live_key_here
+
+# SMTP for emails
+export SMTP_USER=your-smtp-username
+export SMTP_PASS=your-smtp-password
+```
+
+## 🌍 Localization & Internationalization
+
+The extension comes with built-in English translations and can be easily localized for other languages.
+
+### Adding Custom Languages
+
+Create translation files in your project:
+
+**For the Payment Module:**
+```
+modules/@bodonkey/stripe-payment/i18n/stripePayment/[language].json
+```
+
+**For the Button Widget:**
+```
+modules/@bodonkey/stripe-button-widget/i18n/stripeWidget/[language].json
+```
+
+### Example French Translation
+
+`modules/@bodonkey/stripe-payment/i18n/stripePayment/fr.json`:
+```json
+{
+  "buttons": {
+    "buyNow": "Acheter maintenant",
+    "loading": "Chargement...",
+    "purchaseNow": "Acheter maintenant"
+  },
+  "success": {
+    "title": "Paiement réussi !",
+    "subtitle": "Merci pour votre achat. Votre commande a été confirmée.",
+    "orderDetails": "Détails de la commande"
+  },
+  "errors": {
+    "stripeNotConfigured": "Le système de paiement Stripe n'est pas configuré correctement."
   }
 }
 ```
 
-### Testing
+### Available Translation Keys
 
-Use Stripe's test card numbers for development:
+Check the existing English files for all available translation keys:
+- **Payment Module**: `modules/@bodonkey/stripe-payment/i18n/stripePayment/en.json`
+- **Button Widget**: `modules/@bodonkey/stripe-button-widget/i18n/stripeWidget/en.json`
 
-- **Success**: 4242 4242 4242 4242
-- **Decline**: 4000 0000 0000 0002
-- **3D Secure**: 4000 0000 0000 3220
+The widget interface will automatically use your translations in the admin interface, and payment pages will display in the appropriate language based on ApostropheCMS locale settings.
 
-## Production Deployment
+## 🔧 API Reference
 
-When you're ready to go live:
+### Template Helper
 
-1. **Get your live API keys** from the Stripe Dashboard
-2. **Set the production environment variable**:
-   ```bash
-   export APOS_STRIPE_SECRET_KEY=sk_live_your_live_key_here
-   ```
-3. **Never commit API keys to version control**
-4. **Test thoroughly** with small amounts before going live
-
-### Security Best Practices
-
-- ✅ **Always use environment variables** for API keys
-- ✅ **Use test keys during development** (they start with `sk_test_`)
-- ✅ **Use live keys only in production** (they start with `sk_live_`)
-- ❌ **Never commit API keys** to your repository
-- ❌ **Never expose API keys** in client-side code
-- ✅ **Add `.env` to your `.gitignore`** file if using local env files
-
-## Example Project Structure
-
-```
-my-project/
-├── modules/
-│   └── stripe-payment/          # Optional: for customizations
-│       ├── index.js             # Extend the base module
-│       └── views/
-│           ├── success.html     # Custom success page
-│           └── cancel.html      # Custom cancel page
-├── app.js                       # Module configuration
-└── .env                         # Environment variables
+```javascript
+apos.stripePayment.button(options)
 ```
 
-## Contributing
+**Options:**
+- `productId` (required): Unique product identifier
+- `price` (required): Price in decimal format (e.g., 29.99)
+- `name` (required): Product name for checkout
+- `image` (optional): Product image URL
+- `buttonText` (optional): Button text (default: "Buy Now")
+- `class` (optional): Additional CSS classes
+- `style` (optional): Inline CSS styles
+- `disabled` (optional): Disable button
 
-Issues and pull requests welcome at [GitHub repository URL]
+### REST Endpoints
 
-## License
+- `POST /api/v1/@bodonkey/stripe-payment/create-checkout` - Create checkout session
+- `GET /checkout/success` - Payment success page
+- `GET /checkout/cancel` - Payment cancellation page
 
-MIT
+## 🤝 Contributing
+
+Issues and pull requests are welcome! Please visit our [GitHub repository](https://github.com/BoDonkey/stripe-payments-extension).
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+---
+
+**Need Help?** Check out the [ApostropheCMS documentation](https://docs.apostrophecms.org) or join the community on Discord.
