@@ -1,6 +1,6 @@
 {
   "name": "@bodonkey/stripe-payments-extension",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "Stripe payment integration for ApostropheCMS",
   "main": "index.js",
   "type": "module",
