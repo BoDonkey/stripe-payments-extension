@@ -1,6 +1,9 @@
 import Stripe from 'stripe';
 import { CURRENCY_CONFIG } from './lib/currencies.js';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 export default {
   extend: '@apostrophecms/module',
   options: {

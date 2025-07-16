@@ -1,6 +1,6 @@
 {
   "name": "@bodonkey/stripe-payments-extension",
-  "version": "1.0.0",
+  "version": "0.1.0-beta.1",
   "description": "Stripe payment integration for ApostropheCMS",
   "main": "index.js",
   "type": "module",
@@ -13,11 +13,19 @@
     "payments",
     "ecommerce",
     "checkout",
-    "cms"
+    "cms",
+    "widget",
+    "payment-buttons",
+    "apostrophe-extension"
   ],
   "author": "BoDonkey(Robert Means)",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
+    "dotenv": "^17.2.0",
     "stripe": "^14.0.0"
   },
   "peerDependencies": {
@@ -30,5 +38,14 @@
   "bugs": {
     "url": "https://github.com/BoDonkey/stripe-payments-extension/issues"
   },
-  "homepage": "https://github.com/BoDonkey/stripe-payments-extension#readme"
+  "homepage": "https://github.com/BoDonkey/stripe-payments-extension#readme",
+    "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "index.js",
+    "modules/",
+    "README.md",
+    "LICENSE"
+  ]
 }

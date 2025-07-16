@@ -24,46 +24,97 @@ An optional drag-and-drop widget for the ApostropheCMS admin interface that lets
 
 ## 🛠️ Installation
 
+### 1. Install the Package
+
 ```bash
 npm install @bodonkey/stripe-payments-extension
 ```
 
-## ⚡ Quick Setup
+### 2. Add Bundle and Modules to Your Project
 
-### 1. Configure Your Project
-
-Add the core module to your `app.js`. If desired, also add the button widget module:
+Add both the bundle and the modules to your `app.js` configuration:
 
 ```javascript
-modules: {
-  '@bodonkey/stripe-payment': {
-    options: {
-      currency: 'usd',                    // Default currency
-      successUrl: '/checkout/success',    // Custom success page (optional)
-      cancelUrl: '/checkout/cancel',      // Custom cancel page (optional)
+const config = {
+  root: import.meta,
+  shortName: 'your-project-name',
+  baseUrl: 'http://localhost:3000',
+  bundles: [ '@bodonkey/stripe-payments-extension' ],
+  modules: {
+    '@bodonkey/stripe-payment': {},
+    '@bodonkey/stripe-button-widget': {},
+    // Your other modules...
+  }
+};
+```
 
-      // Email confirmation settings
-      email: {
-        enabled: true,
-        fromAddress: 'orders@yourstore.com',
-        fromName: 'Your Store Name',
-        subject: 'Order Confirmation'
+> **📝 Note**: Both the bundle AND the modules need to be included for the extension to work properly. The bundle provides the code, while the modules section activates them.
+
+## ⚡ Quick Setup
+
+### 1. Configure Module Options
+
+You can customize the settings by adding options to the modules:
+
+```javascript
+const config = {
+  root: import.meta,
+  shortName: 'your-project-name',
+  baseUrl: 'http://localhost:3000',
+  bundles: [ '@bodonkey/stripe-payments-extension' ],
+  modules: {
+    '@bodonkey/stripe-payment': {
+      options: {
+        currency: 'usd',                    // Default currency
+        successUrl: '/checkout/success',    // Custom success page (optional)
+        cancelUrl: '/checkout/cancel',      // Custom cancel page (optional)
+
+        // Email confirmation settings
+        email: {
+          enabled: true,
+          fromAddress: 'orders@yourstore.com',
+          fromName: 'Your Store Name',
+          subject: 'Order Confirmation'
+        }
       }
+    },
+    '@bodonkey/stripe-button-widget': {
+      // Widget-specific options (if needed)
     }
-  },
-  '@bodonkey/stripe-button-widget': {}   // Enables the admin widget
-}
+  }
+};
 ```
 
 ### 2. Set Your Stripe Key
 
-Create a `.env` file or set your environment variable:
+The Stripe secret key can be configured in several ways. **If you're having issues with environment variables, try the export method first**:
 
+#### Method 1: Export Environment Variable (Most Reliable)
+```bash
+export APOS_STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+npm run dev
+```
+
+#### Method 2: .env File
+Create a `.env` file in your project root:
 ```bash
 APOS_STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
 ```
 
-> **⚠️ Important**: Add `.env` to your `.gitignore` file to keep your keys secure.
+> **⚠️ Important**: 
+> - Add `.env` to your `.gitignore` file to keep your keys secure
+> - If `.env` files aren't working, use the export method instead
+> - Command line environment variables may not work reliably with all ApostropheCMS setups
+
+#### Method 3: Module options (not recommended for production):
+   ```javascript
+   '@bodonkey/stripe-payment': {
+     options: {
+       apiSecret: process.env.APOS_STRIPE_SECRET_KEY || 'sk_test_your_key_here'
+     }
+   }
+   ```
+
 
 ### 3. Configure Email (Optional)
 
